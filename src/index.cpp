@@ -3,9 +3,11 @@
 #include <iostream>
 #include <filesystem>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Sprite.hpp>
+#include "./Window/Window.h"
+#include "./Window/Texture.h"
+
+#include <SFML/Graphics/RectangleShape.hpp>
+
 
 const std::string loc_prefix = "./";
 const std::string TEXTURE_PLACEHOLDER_PATH = loc_prefix + "assets/err_texture.png";
@@ -42,68 +44,57 @@ class pairImageSet{
 		delete mark_images;
 	}
 };
-//-------------------------------------------------------------------------------------------------
-class Window {
-	double wth = 0;
-	double hth = 0;
-	std::string lbl;
-	sf::RenderWindow wnd;
-	std::vector<sf::Drawable*> elements;
-	std::vector<sf::Texture* > textures;
-	
-	const void draw() { for ( long unsigned int i = 0; i < elements.size(); ++i) {wnd.draw(*elements[i]); } }
-	public:
-	Window(const double w, const double h, const std::string& l)
-		: wth{w}, hth{h}, lbl{l}, wnd(sf::VideoMode(w,h),l) {}
-	
-	const long unsigned int num_of_elements() const { return elements.size(); }
-	void attach(sf::Drawable* d) { elements.push_back(d); }
-	void save_texture(sf::Texture* t) { textures.push_back(t);}
 
-	void show() {
+class Matilda_window: public wlr_gui::Window{
+
+	std::vector<sf::Texture*> base_textures;
+	std::vector<sf::Texture*> mark_textures;
+	std::vector<sf::Sprite*>stickerMarks;
+	std::vector<sf::Sprite*>bases;
+
+	sf::RectangleShape background;
+
+	unsigned int xpos = 0;
+	unsigned int ypos = 0;
+
+	public:	
+	Matilda_window(
+		const double w, 
+		const double h, 
+		const std::string& l, 
+		const std::string& assets_dir,
+		const std::string& base_dir, 
+		const std::string& mark_dir) : wlr_gui::Window(w,h,l) {
 	
-		while (wnd.isOpen()) {
-		sf::Event event;
-        	while (wnd.pollEvent(event))   {
-            		if (event.type == sf::Event::Closed)
-       		         wnd.close();
-	       		}
-        	wnd.clear();
-		this->draw();
-        	wnd.display();
-		}	
+		to_center();
+		draw_background();
+	
+
+	//read markdir
+	//fulling mark_textures
 	}
-};
-//-------------------------------------------------------------------------------------------------
-class Texture {
-	sf::Texture tr;
-	std::string path;
-	//---------------------------------------------------------------------
-	std::string check_texture_path( const std::string& p) {
-		bool find_it = std::filesystem::exists(p);
-		return find_it ? p : TEXTURE_PLACEHOLDER_PATH;
+
+	void to_center() {
+		xpos = sf::VideoMode::getDesktopMode().width/2 - this->width()/2;
+		ypos = sf::VideoMode::getDesktopMode().height/2 - this->height()/2;
+		this->base()->setPosition(sf::Vector2i(xpos,ypos));
 	}
-	//---------------------------------------------------------------------
-	public:
-	Texture(const std::string& p) { path = this->check_texture_path(p);  tr.loadFromFile(path); }
-	sf::Texture* get_primary() { return &tr; }
+
+	void draw_background() {
+		background.setSize(sf::Vector2f(this->width(),this->height()));
+		background.setFillColor(sf::Color(189, 183, 107));
+		this->attach(&background);
+	}
+	void draw_spec() override {return;};
 };
 //-------------------------------------------------------------------------------------------------
 int main(){
-	const std::string base_dir = loc_prefix + "assets/baseimages/";
-	const std::string mark_dir = loc_prefix + "assets/marks/";
-	const std::string test_base = base_dir + "matild.jpeg";
-	const std::string test_mark = "node_mark.png";
+	const std::string assets_dir = loc_prefix + "assets/";
+	const std::string base_dir = assets_dir + "baseimages/";
+	const std::string mark_dir = assets_dir + "marks/";
+	Matilda_window* mw = new Matilda_window(1200,600,"matilda",assets_dir,base_dir,mark_dir);
 
-	sf::Sprite sp;
-	Texture* tx = new Texture(test_base);
-	sp.setTexture(*tx->get_primary());
-
-	Window* wnd = new Window(800,600,"matilda");
-	wnd->attach(&sp);
-	wnd->save_texture(tx->get_primary());
-	wnd->show();
-
+	mw->show();
     return 0;
 
 }
