@@ -1,0 +1,43 @@
+#main_box{
+	background-color: red;	
+}
+#center_box{
+	background-color: white;
+}
+/*-------------------------------------------*/
+#photos_window{
+	background-color:green;
+}
+
+#photos_box{
+	background-color: yellow;
+}
+
+#photos_address_entry{
+	margin: 10px;
+}
+#load_photos_button{
+	margin: 10px;
+}
+
+#photos_controls{
+}
+/*-------------------------------------------*/
+
+#stickers {
+	background-color: yellow;
+}
+#stickers_controls {
+	background-color: yellow;
+}
+#stickers_window{
+	background-color: green;
+	}
+
+#stickers_address_entry{
+	margin: 10px;
+}
+
+#load_stickers_button{
+	margin: 10px;
+}

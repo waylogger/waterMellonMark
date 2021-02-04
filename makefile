@@ -1,26 +1,24 @@
-# 02.02.2021
-# wlr_986
-# matilda_makefile
+
 # -------------------------------------------------------------------------------------------------
-#compiling:
-COMP_OPT=-Wall
-STD=-std=c++17
+GTK_OPT=`pkg-config gtkmm-3.0 --cflags --libs`
+TMP=./tmp
+SRC=./src
+# -------------------------------------------------------------------------------------------------
 COMP=g++
+COMP_OPT=-std=c++17 -Wall
+NO_LINK=-c
 OUT=-o index
+# -------------------------------------------------------------------------------------------------
+OBJS=$(TMP)/index.o $(TMP)/Matilda_window.o
+DEPS=index matilda
+DEV_DEPS=done
+# -------------------------------------------------------------------------------------------------
+dev: $(DEV_DEPS)
 
-FINISH_OBJ=./tmp/main.o ./tmp/Window.o
-# -------------------------------------------------------------------------------------------------
-# linking
-SFML_LIBS=-lsfml-graphics -lsfml-window -lsfml-system
-# -------------------------------------------------------------------------------------------------
-FINISH_DEPTS=main window
-# -------------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
-
-finish: $(FINISH_DEPTS)
-	$(COMP) $(FINISH_OBJ) $(COMP_OPT) $(STD) $(SFML_LIBS) $(OUT)
-main:
-	$(COMP) ./src/index.cpp -c -o ./tmp/main.o $(STD)
-window:
-	$(COMP) ./src/Window/Window.cpp -c -o ./tmp/Window.o $(STD)
-
+done: $(DEPS)
+	$(COMP) $(COMP_OPT) $(OBJS) $(OUT) $(GTK_OPT)
+index:
+	$(COMP) $(COMP_OPT) $(NO_LINK) $(GTK_OPT) $(SRC)/index.cpp -o $(TMP)/index.o
+matilda:
+	$(COMP) $(COMP_OPT) $(NO_LINK) $(GTK_OPT) $(SRC)/Matilda_window.cpp -o $(TMP)/Matilda_window.o
+	
