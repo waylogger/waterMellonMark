@@ -225,14 +225,8 @@ void Matilda_window::stickers_read_and_place(const Glib::ustring& path, Gtk::Gri
 		Gtk::EventBox* eb = new Gtk::EventBox;	
 		Gtk::EventBox* seb = new Gtk::EventBox;
 
-		eb->set_events(Gdk::ENTER_NOTIFY_MASK | Gdk::LEAVE_NOTIFY_MASK | Gdk::BUTTON_MOTION_MASK | Gdk::KEY_PRESS_MASK | Gdk::BUTTON_PRESS_MASK);
-		seb->set_events(
-		Gdk::ENTER_NOTIFY_MASK | 
-		Gdk::LEAVE_NOTIFY_MASK | 
-		Gdk::BUTTON_MOTION_MASK | 
-		Gdk::KEY_PRESS_MASK | 
-		Gdk::BUTTON_PRESS_MASK |
-		Gdk::SCROLL_MASK);
+		eb->set_events(Gdk::ENTER_NOTIFY_MASK | Gdk::LEAVE_NOTIFY_MASK | Gdk::BUTTON_MOTION_MASK | Gdk::KEY_PRESS_MASK);
+		seb->set_events(Gdk::ENTER_NOTIFY_MASK | Gdk::LEAVE_NOTIFY_MASK | Gdk::BUTTON_MOTION_MASK | Gdk::KEY_PRESS_MASK);
 		eb->drag_source_set(listTargets);
 		seb->drag_source_set(listTargets);
 
@@ -246,9 +240,6 @@ void Matilda_window::stickers_read_and_place(const Glib::ustring& path, Gtk::Gri
 		seb->signal_button_press_event().connect(
 			sigc::bind<const unsigned int>(sigc::mem_fun(*this,&Matilda_window::delete_sticker),inx)
 		);
-		seb->signal_scroll_event().connect(
-			sigc::bind<const unsigned int>(sigc::mem_fun(*this,&Matilda_window::rotate_sticker),inx)
-			);
 
 
 		this->init_new_widget(eb,"stickers_grid_eventbox",{125,125},this->stickers_grid,this->stickers->size());
@@ -302,7 +293,7 @@ void Matilda_window::photos_read_and_place(const Glib::ustring& path, Gtk::Grid*
 		nimg->set_opacity(0.9);
 		nimg->show();
 		Gtk::EventBox* eb = new Gtk::EventBox;	
-		eb->set_events(Gdk::ENTER_NOTIFY_MASK | Gdk::LEAVE_NOTIFY_MASK | Gdk::BUTTON_MOTION_MASK | Gdk::BUTTON_PRESS_MASK);
+		eb->set_events(Gdk::ENTER_NOTIFY_MASK | Gdk::LEAVE_NOTIFY_MASK | Gdk::BUTTON_MOTION_MASK);
 		
 		//nimg->set_state_flags(Gtk::STATE_FLAG_PRELIGHT);
 		this->init_new_widget(eb,"photos_grid_eventbox",{125,125},this->photos_grid,this->photos->size());
@@ -339,4 +330,11 @@ void margin_set(Gtk::Widget* widget, const int margin){
 
 }
 //-------------------------------------------------------------------------------------------------
+bool is_set(const guint& state, const unsigned int set){
+	std::cout << set << '\n';
+	std::cout << ( state & set ) << '\n';
+	if ( (state & set ) == set ) return true;
+	return false;
+}
+
 

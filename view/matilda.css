@@ -1,43 +1,113 @@
-#main_box{
-	background-color: red;	
-}
 #center_box{
-	background-color: white;
+	background: white;
+	border-radius: 5%;
+	border: 5px black solid;
+	margin-top: 40px;
+	margin-left: 60px;
+	margin-right: 50px;
+}
+
+#center_box:hover {
+}
+#center_draw_box{
+	margin: 50px;
+	margin-bottom:0;
+	border: 2px solid black;
+	padding:0;
+
+}
+#central_buttons_box{
+	padding: 10px;
+	margin: 5px 156px;
+}
+#control_button{
+	
+	margin: 0 10px;
+
+}
+#filters_text{
+	margin-left: 50px;
+	margin-right: 20px;
+	color:gray;
+	font-size: 25px;
+}
+#central_img{
+	margin-right: 0;
+	margin-bottom:0;
 }
 /*-------------------------------------------*/
 #photos_window{
-	background-color:green;
+	border-right: white 1px solid;
 }
 
 #photos_box{
-	background-color: yellow;
 }
 
 #photos_address_entry{
+	border: 2px white solid;
 	margin: 10px;
 }
 #load_photos_button{
+	border: 2px white solid;
 	margin: 10px;
 }
-
 #photos_controls{
+	border: 1px white solid;
 }
+#photos_grid{ 
+}
+#photos_grid_img{
+	border: 1px solid white;
+	padding:0;
+}
+
+#photos_grid_img:hover{	
+}
+#photos_grid_eventbox:hover{
+	border: 2px green solid;
+	background-color: gray;
+	background-blend-mode: screen;
+}
+
+#photos_grid_eventbox {
+}
+
+
 /*-------------------------------------------*/
-
-#stickers {
-	background-color: yellow;
-}
-#stickers_controls {
-	background-color: yellow;
-}
-#stickers_window{
-	background-color: green;
-	}
-
 #stickers_address_entry{
+	border: 2px white solid;
 	margin: 10px;
 }
-
 #load_stickers_button{
 	margin: 10px;
+	padding-right:0px;
+	border: 2px white solid;
+}
+#stickers_grid_img{
+	padding: 5px;
+}
+#stickers_grid_button:hover{
+	background-color: gray;
+	background-blend-mode: screen;
+}
+#stickers_grid_eventbox{
+	border: 1px white solid;
+}
+#stickers_grid_eventbox:hover{
+	background-color:gray;
+	background-blend-mode: screen;
+}
+#stickers_grid{
+	padding-left: 5px;
+}
+
+#stickers_box{
+}
+
+#stickers_controls{
+	border: 1px white solid;
+}
+
+#stickers_window{
+	border-left: 1px solid white;
 }

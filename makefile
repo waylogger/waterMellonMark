@@ -7,18 +7,19 @@ SRC=./src
 COMP=g++
 COMP_OPT=-std=c++17 -Wall
 NO_LINK=-c
-OUT=-o index
+OUT=-o main
 # -------------------------------------------------------------------------------------------------
-OBJS=$(TMP)/index.o $(TMP)/Matilda_window.o
-DEPS=index matilda
+OBJS=$(TMP)/main.o $(TMP)/Matilda_window.o
+DEPS=main
 DEV_DEPS=done
 # -------------------------------------------------------------------------------------------------
-dev: $(DEV_DEPS)
 
 done: $(DEPS)
 	$(COMP) $(COMP_OPT) $(OBJS) $(OUT) $(GTK_OPT)
-index:
-	$(COMP) $(COMP_OPT) $(NO_LINK) $(GTK_OPT) $(SRC)/index.cpp -o $(TMP)/index.o
+
+main:	matilda
+	$(COMP) $(COMP_OPT) $(NO_LINK) $(GTK_OPT) $(SRC)/main.cpp -o $(TMP)/main.o
+
 matilda:
 	$(COMP) $(COMP_OPT) $(NO_LINK) $(GTK_OPT) $(SRC)/Matilda_window.cpp -o $(TMP)/Matilda_window.o
 	
