@@ -33,26 +33,27 @@ void margin_set(Gtk::Widget* widget, const int margin);
 bool is_set(const guint& state, const unsigned int set);
 // ------------------------------------------------------------------------------------------------
 class Matilda_window: public Gtk::Window{
-	void init_new_widget( Gtk::Widget*, const Glib::ustring&, const std::pair<int,int>&, Gtk::Container*);
-	void init_new_widget( Gtk::Widget*, const Glib::ustring&, const std::pair<int,int>&, Gtk::Grid*, const int);
-	void init_new_widget( Gtk::Widget*, const Glib::ustring&, const std::pair<int,int>&, Gtk::Fixed*, const int x, const int y);
 
-	void choose_photos_dir	();
-	void choose_stickers_dir();
+	const double stickers_width = 125;
+	const double stickers_height = this->stickers_width;
 	public:
 	Glib::RefPtr<Gtk::CssProvider>     styles;
 	Glib::RefPtr<Gtk::StyleContext>	   style_context;
 	Glib::RefPtr<Gdk::Screen> 	   screen;
-
+	
 	Matilda_window();
 	virtual ~Matilda_window(); 
 	Glib::ustring* 			    css 		= nullptr;
 	std::vector<std::filesystem::path>* photos_extension 	= nullptr;
 	std::vector<std::filesystem::path>* stickers_extension 	= nullptr;
 	//---------------------------------------------------------------------
-	protected:
+	private:
 	std::vector<Gtk::EventBox*>* stickers			= nullptr;
 	std::vector<Gtk::EventBox*>* photos			= nullptr;
+
+	std::vector<double> stickers_rotate_rate;
+	std::vector<double> stickers_scale_rate;
+	std::vector<std::pair<double,double>> stickers_size;
 
 	std::vector<Gtk::Image*>* raw_photos			= nullptr;
 	std::vector<Gtk::Image*>* raw_stickers			= nullptr;
@@ -62,123 +63,6 @@ class Matilda_window: public Gtk::Window{
 	std::vector<Gtk::EventBox*> small_stickers;
 	std::vector<unsigned int> drawed_stickers_inxs;
 
-
-	//---------------------------------------------------------------------
-	Gtk::Box* 		main_box;
-	//---------------------------------------------------------------------
-	//center
-	void			save(){ std::cout << "save_button_is_pressed\n";};
-	void			run(){ std::cout << "run_button_is_pressed\n";};
-	void			clear(){ this->clear_central_image();};
-	void			total_clear(){ std::cout << "total_clear_button_is_pressed\n";};
-	void			random(){ std::cout << "random_button_is_pressed\n";};
-	void			stickers_filters_apply(){ std::cout << this->stickers_filters->get_active_text() + ": filters was applyed\n";};
-	bool			hover()			{ std::cout << "HOVER\n"; return true;};
-	// ----------------------------------------------------------------------------------------
-	void			clear_central_image()	{for ( auto& a: this->small_stickers) draw_box->remove(*a);}
-	// ----------------------------------------------------------------------------------------
-	void 			clear_draw_box()	{ draw_box->remove(*this->central_img);}
-	//-----------------------------------------------------------------------	
-	// signals
-	// signals data
-	// signals functions
-	bool 			enter_crossing_photos(GdkEventCrossing* ce, const unsigned int i) {	
-				(*photos)[i]->set_state_flags(Gtk::STATE_FLAG_PRELIGHT);
-				return true;
-	}
-	// ----------------------------------------------------------------------------------------
-	bool 			leave_crossing_photos(GdkEventCrossing* ce, const unsigned int i) {	
-				(*photos)[i]->unset_state_flags(Gtk::STATE_FLAG_PRELIGHT);
-				return true;
-	}
-	// ----------------------------------------------------------------------------------------
-	bool 			enter_crossing_stickers(GdkEventCrossing* ce, const unsigned int i) {	
-				(*stickers)[i]->set_state_flags(Gtk::STATE_FLAG_PRELIGHT);
-				return true;
-	}
-	// ----------------------------------------------------------------------------------------
-	bool 			leave_crossing_stickers(GdkEventCrossing* ce, const unsigned int i) {	
-				(*stickers)[i]->unset_state_flags(Gtk::STATE_FLAG_PRELIGHT);
-				return true;
-	}
-	// ----------------------------------------------------------------------------------------
-	bool			photo_activate(GdkEventButton*, const unsigned int i) {
-		this->clear_central_image();
-		this->clear_draw_box();
-		auto buf0 = (*raw_photos)[i]->get_pixbuf();
-		central_img->set(buf0->scale_simple(1076,700,Gdk::InterpType::INTERP_HYPER));
-		init_new_widget(central_img,"central_img",{0,0},draw_box,0,0);
-		return true;
-	}
-	
-	bool	just_key(GdkEventKey* key_event, const unsigned int){
-		return true;
-	}
-	// ----------------------------------------------------------------------------------------
-	bool delete_sticker(GdkEventButton* b, const unsigned int inx){
-		if ( b->button == 1 && ((b->state & Gdk::MOD1_MASK) == Gdk::MOD1_MASK) )draw_box->remove(*small_stickers[inx]);
-		return true;
-	}
-	
-	bool rotate_sticker(GdkEventScroll* scroll, const unsigned int inx) {
-		
-	Gtk::Image* img = dynamic_cast<Gtk::Image*>(small_stickers[inx]->get_child());
-	Glib::RefPtr< Gdk::Pixbuf > old_pixbuf = img->get_pixbuf(); 
-	Glib::RefPtr<Gdk::Window> win = small_stickers[inx]->get_window();
-
-	Cairo::RefPtr<Cairo::Context> cr = win->create_cairo_context();
-	
-	const double degree = 180;
-	double w = img->get_width();
-	double h = img->get_height();
-
-
-	cr->translate (w*0.5, h*0.5);
-	cr->rotate (degree*3.14/180);
-	cr->translate (-0.5*w, -0.5*h);
-
-	Gdk::Cairo::set_source_pixbuf(cr,old_pixbuf);
-	cr->paint();
-		return true;
-	}
-
-
-	// ----------------------------------------------------------------------------------------
-	void stickers_drag_data_set(
-		const Glib::RefPtr<Gdk::DragContext>& context,
-		Gtk::SelectionData& selection_data, 
-		guint info, 
-		guint time, 
-		const unsigned int inx){
-			selection_data.set(
-				selection_data.get_target(),
-				8,
-				(const guchar*)(std::to_string(inx).c_str()),
-				64
-			);
-		}
-	// ----------------------------------------------------------------------------------------
-	void central_image_drop_drag_data(
-		const Glib::RefPtr<Gdk::DragContext>& context, 
-		int x, 
-		int y,
-		const Gtk::SelectionData& selection_data,
-		guint info,
-		guint time){
-
-		std::string s = selection_data.get_data_as_string();
-		unsigned int inx = std::stoul(s);
-		if ( std::find(this->drawed_stickers_inxs.begin(),this->drawed_stickers_inxs.end(), inx) != this->drawed_stickers_inxs.end() ) {
-			this->draw_box->remove(*this->small_stickers[inx]);	
-		}
-		else
-			drawed_stickers_inxs.push_back(inx);
-		Gtk::EventBox* sticker = small_stickers[inx];
-		this->init_new_widget(sticker,"name",{125,125},this->draw_box,x-125/2,y-125/2);
-		context->drag_finish(false,false,time);
-
-	}
-		
 	//---------------------------------------------------------------------
 	Gtk::Box* 		center_box 			= nullptr;
 	Gtk::Fixed*		draw_box			= nullptr;
@@ -212,7 +96,70 @@ class Matilda_window: public Gtk::Window{
 	Gtk::Entry* 		stickers_address_entry		= nullptr;
 	Gtk::Grid* 		stickers_grid			= nullptr;
 	//---------------------------------------------------------------------
-};
+	Gtk::Box* 		main_box;
+	//---------------------------------------------------------------------
+	//center
+	void			save();
+	void			run();
+	void			clear();
+	void			total_clear();
+	void			random();
+	void			stickers_filters_apply();
+	bool			hover();
+	// ----------------------------------------------------------------------------------------
+	void			clear_central_image();
+	// ----------------------------------------------------------------------------------------
+	void 			clear_draw_box();
+	//-----------------------------------------------------------------------	
+	bool 			enter_crossing_photos(GdkEventCrossing* ce, const unsigned int i);
+	// ----------------------------------------------------------------------------------------
+	bool 			leave_crossing_photos(GdkEventCrossing* ce, const unsigned int i);
+	// ----------------------------------------------------------------------------------------
+	bool 			enter_crossing_stickers(GdkEventCrossing* ce, const unsigned int i);
+	// ----------------------------------------------------------------------------------------
+	bool 			leave_crossing_stickers(GdkEventCrossing* ce, const unsigned int i);
+	// ----------------------------------------------------------------------------------------
+	bool			photo_activate(GdkEventButton*, const unsigned int i);
+	// ----------------------------------------------------------------------------------------
+	bool	just_key(GdkEventKey* key_event, const unsigned int);
+	// ----------------------------------------------------------------------------------------
+	bool copy_sticker( const unsigned int inx);
+	// ----------------------------------------------------------------------------------------
+	bool click_sticker(GdkEventButton* b, const unsigned int inx);
+	// ----------------------------------------------------------------------------------------
+	bool scale_sticker(GdkEventScroll* scroll, const unsigned int inx);
+	// ----------------------------------------------------------------------------------------
+	bool rotate_sticker(GdkEventScroll* scroll, const unsigned int inx);
+	// ----------------------------------------------------------------------------------------
+	bool scroll_it(GdkEventScroll* scroll, const unsigned int inx);
+	// ----------------------------------------------------------------------------------------
+	void stickers_drag_data_set(
+		const Glib::RefPtr<Gdk::DragContext>& context,
+		Gtk::SelectionData& selection_data, 
+		guint info, 
+		guint time, 
+		const unsigned int inx);
+	// ----------------------------------------------------------------------------------------
+	void central_image_drop_drag_data(
+		const Glib::RefPtr<Gdk::DragContext>& context, 
+		int x, 
+		int y,
+		const Gtk::SelectionData& selection_data,
+		guint info,
+		guint time);
+
+
+	void init_new_widget( Gtk::Widget*, const Glib::ustring&, const std::pair<int,int>&, Gtk::Container*);
+	void init_new_widget( Gtk::Widget*, const Glib::ustring&, const std::pair<int,int>&, Gtk::Grid*, const int);
+	void init_new_widget( Gtk::Widget*, const Glib::ustring&, const std::pair<int,int>&, Gtk::Fixed*, const int x, const int y);
+
+	void choose_photos_dir	();
+	void choose_stickers_dir();
+	double calc_degree_for_rotate_sticker(const unsigned int inx, const double degree);
+	double calc_zoom_for_scale (const unsigned int inx, const double zoom);
+
+
+	};
 
 
 

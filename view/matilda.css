@@ -85,6 +85,7 @@
 }
 #stickers_grid_img{
 	padding: 5px;
+	border: 1px white solid;
 }
 #stickers_grid_button:hover{
 	background-color: gray;
